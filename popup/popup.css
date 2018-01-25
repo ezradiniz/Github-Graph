@@ -1,0 +1,16 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  font-family: "sans", "sans-serif";
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 50px);
+  grid-gap: 5px;
+  grid-auto-rows: 100px;
+  background-color: #24292e;
+  justify-items: center;
+  align-items: center;
+  text-align: center;
+}
