@@ -21,7 +21,7 @@
     }
   ],
   "web_accessible_resources": [
-    "view/index.html"
+    "app/app.html"
   ],
   "permissions": [
     "tabs",
