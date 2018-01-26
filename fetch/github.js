@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 console.log("github.js loaded");
 
@@ -20,6 +20,8 @@ const _initGraph = nodes =>
 const _createURL = (from, type) =>
   (from.match(GITHUB)) ? from : `${GITHUB}/${from}/${type}`;
 
+const _handleResponse = (res, resolve, reject) => (res.status === 200) ? resolve(res) : reject(res);
+
 const queryNodes = doc => {
   const response = {};
   const followersList = [ ...doc.querySelectorAll(".follow-list-item") ];
@@ -33,9 +35,10 @@ const queryNodes = doc => {
 
 const fetchWrapper = (time, promise, ...params) =>
   new Promise((resolve, reject) => {
+    console.log("Fetched", params);
     setTimeout(() => {
-      promise(...params)
-        .then(res => resolve(res))
+      promise(params)
+        .then(res => _handleResponse(res, resolve, reject))
         .catch(err => reject(err));
     }, time);
   });
