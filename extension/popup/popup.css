@@ -48,6 +48,11 @@ h1 {
   color: #FFF;
   font-size: 15px;
   text-shadow: 0px -2px #444;
+  cursor: pointer;
+}
+
+.button:hover {
+  opacity: 0.8;
 }
 
 .footer {
