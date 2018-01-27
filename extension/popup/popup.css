@@ -1,16 +1,73 @@
-body {
-  margin: 0px;
-  padding: 0px;
-  font-family: "sans", "sans-serif";
+html, body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  width: 380px;
+  color: #444;
 }
 
-.container {
+.grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 50px);
-  grid-gap: 5px;
-  grid-auto-rows: 100px;
-  background-color: #24292e;
+  grid-template-rows: auto 1fr 1fr;
+}
+
+.header {
+  background-color: #e1e4e8;
+  padding: 10px;
+  width: 100%;
+}
+
+h1 {
+  font-family: 'Menlo', monospace;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.logo-icon {
+  vertical-align: text-bottom;
+  margin-right: 12px;
+}
+
+.version {
+  font-size: 14px;
+}
+
+.content {
+  display: grid;
   justify-items: center;
-  align-items: center;
-  text-align: center;
+  font-size: 15px;
+  padding: 1px;
+}
+
+.button {
+  background-color: #24292e;
+  padding: 10px 40px;
+  border-radius: 10px;
+  border-bottom: 3px solid #444;
+  color: #FFF;
+  font-size: 15px;
+  text-shadow: 0px -2px #444;
+}
+
+.footer {
+  display: grid;
+  align-self: center;
+  padding-top: 10px;
+  border-top: 1px solid #c0c0c0;
+}
+
+.icon {
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+  justify-self: center;
+}
+
+.icon:hover {
+  opacity: 0.6;
+}
+
+.icon .fa {
+  font-size: 40px;
+  color: #444;
 }

@@ -3,17 +3,30 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="popup.css">
     <title>GitHub Graph</title>
   </head>
   <body>
-    <div class="container">
-      <div class="item-1"></div>
-      <div class="item-2">
-        <h4>GitHub Graph</h4>
-        <button class="btn">Open</button>
+    <div class="grid-container">
+      <div class="header">
+        <h1 class="logo">
+          <img class="logo-icon" src="../icon.png"/>
+          GitHub Graph
+        </h1>
       </div>
-      <div class="item-3"></div>
+      <div class="content">
+        <p>Visualize your GitHub network</p>
+        <button class="button">Open</button>
+      </div>
+      <div class="footer">
+        <div class="icon">
+          <a href="https://github.com/ezradiniz/Github-Graph" target="_blank">
+            <i class="fa fa-github"></i>
+          </a>
+        </div>
+      </div>
     </div>
     <script src="popup.js"></script>
   </body>

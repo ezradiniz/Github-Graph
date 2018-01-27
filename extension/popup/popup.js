@@ -1,11 +1,10 @@
 
 function onClickBtn() {
-  console.log("ping");
   chrome.runtime.sendMessage({ type: 'START' }, response => {
+    // TODO: Handle response
     console.log(response);
   });
 }
 
-const btn = document.querySelector(".btn");
-console.log(btn);
+const btn = document.querySelector(".button");
 btn.addEventListener("click", onClickBtn);
