@@ -12,3 +12,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   return true;
 });
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	if (/^https:\/\/github.com\/.*$/.test(tab.url)) {
+		chrome.browserAction.enable(tabId);
+	} else {
+		chrome.browserAction.disable(tabId);
+	}
+});

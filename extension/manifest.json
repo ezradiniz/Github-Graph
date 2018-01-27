@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "GitHub Graph",
   "description": "Visualize your network",
-  "version": "1.1",
+  "version": "1.0",
   "browser_action": {
     "default_title": "",
     "default_icon": "icon.png",
