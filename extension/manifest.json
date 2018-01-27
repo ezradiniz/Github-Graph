@@ -24,6 +24,7 @@
     "app/app.html"
   ],
   "permissions": [
+    "idle",
     "tabs",
     "https://github.com/*"
   ]

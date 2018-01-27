@@ -29,10 +29,6 @@ h1 {
   margin-right: 12px;
 }
 
-.version {
-  font-size: 14px;
-}
-
 .content {
   display: grid;
   justify-items: center;

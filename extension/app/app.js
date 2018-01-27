@@ -2,17 +2,19 @@
 
 const draw = dataset => {
 
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const linkDistance= width / 4;
-
   const colors = d3.scale.category10();
 
-  const svg = d3.select('svg');
+  const diff = document.querySelector('svg').getBoundingClientRect();
+
+  const width = window.innerWidth;
+  const height = window.innerHeight - diff.top;
+  const linkDistance= height / 4;
+
+  const svg = d3.select('svg').attr({ 'width': window.innerWidth, 'height': window.innerHeight - diff.top });
 
   d3.select(window)
     .on('resize.updatesvg', () => {
-      svg.attr({ 'width': window.innerWidth, 'height': window.innerHeight });
+      svg.attr({ 'width': window.innerWidth, 'height': window.innerHeight - diff.top });
     });
 
   const force = d3.layout.force()
@@ -114,16 +116,20 @@ function _onSuccess(data) {
     data[key].map(to => graph['edges'].push({ source: index, target: nodesIndex[to] }));
     return { name: key };
   });
+  document.querySelector('.loading').style.display = 'none';
   draw(graph);
 }
 
 function _onFail(err) {
   // TODO: Implement error handler
+  document.querySelector('.loading').style.display = 'none';
+  alert('Sorry, an error occurred while processing your request');
   console.error(err);
 }
 
 function onClick() {
   const input = document.querySelector('input');
+  document.querySelector('.loading').style.display = 'block';
   createNetwork(input.value)
     .then(_onSuccess)
     .catch(_onFail);
