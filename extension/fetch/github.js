@@ -66,11 +66,11 @@ const fetchAllNodesFrom = (from, type) =>
     doWork(from);
   });
 
-const createNetwork = from =>
+const createNetwork = user =>
   new Promise((resolve, reject) => {
-    fetchAllNodesFrom(from, 'followers')
+    fetchAllNodesFrom(user, 'followers')
       .then(followers =>
-        fetchAllNodesFrom(from, 'following')
+        fetchAllNodesFrom(user, 'following')
           .then(following => new Set([ ...followers ].concat([ ...following ])))
           .catch(err => reject(err))
       )
