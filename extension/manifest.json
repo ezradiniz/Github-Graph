@@ -2,22 +2,29 @@
   "manifest_version": 2,
   "name": "GitHub Graph",
   "description": "Visualize your network",
-  "version": "1.1",
+  "version": "1.0",
   "browser_action": {
     "default_title": "",
     "default_icon": "icon.png",
-    "default_popup": "popup.html"
+    "default_popup": "popup/popup.html"
   },
   "icons": {
     "128": "icon.png"
   },
+  "background": {                  
+    "scripts": ["background.js"]   
+  },                               
   "content_scripts": [
     {
       "matches": ["https://github.com/*"],
       "js": ["content.js"]
     }
   ],
+  "web_accessible_resources": [
+    "app/app.html"
+  ],
   "permissions": [
+    "idle",
     "tabs",
     "https://github.com/*"
   ]
