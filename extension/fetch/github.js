@@ -26,8 +26,8 @@ const queryNodes = doc => {
   const response = {};
   const followersList = [ ...doc.querySelectorAll(".follow-list-item") ];
   response.nodes = followersList.map(entry => entry.querySelector("a > img").alt.replace("@", ""));
-  const next = document.querySelector(".pagination > a");
-  if (next) {
+  const next = doc.querySelector(".pagination > a");
+  if (next && next.innerHTML === 'Next') {
     response.next = next.href;
   }
   return response;
