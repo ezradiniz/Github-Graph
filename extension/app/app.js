@@ -1,51 +1,70 @@
 "use strict";
 
-const draw = dataset => {
-
-  const colors = d3.scale.category10();
+const draw = graph => {
 
   const diff = document.querySelector('svg').getBoundingClientRect();
-
   const width = window.innerWidth;
   const height = window.innerHeight - diff.top;
-  const linkDistance= height / 4;
+  const linkDistance= height / 8;
 
-  const svg = d3.select('svg').attr({ 'width': window.innerWidth, 'height': window.innerHeight - diff.top });
+  const color = d3
+    .scale
+    .category20();
 
-  d3.select(window)
-    .on('resize.updatesvg', () => {
-      svg.attr({ 'width': window.innerWidth, 'height': window.innerHeight - diff.top });
-    });
-
-  const force = d3.layout.force()
-    .nodes(dataset.nodes)
-    .links(dataset.edges)
-    .size([width, height])
-    .linkDistance([linkDistance])
-    .charge([-500])
+  const force = d3
+    .layout
+    .force()
+    .charge([-400])
     .theta(0.1)
     .gravity(0.05)
+    .linkDistance(linkDistance)
+    .size([width, height]);
+
+  const zoom = d3
+    .behavior
+    .zoom()
+    .scaleExtent([1, 10])
+    .on('zoom', () => {
+      svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    });
+
+  const svg = d3
+    .select('svg')
+    .attr('width', width)
+    .attr('height', height)
+    .call(zoom)
+    .append('svg:g');
+
+  force
+    .drag()
+    .on('dragstart', () => d3.event.sourceEvent.stopPropagation());
+
+  force
+    .nodes(graph.nodes)
+    .links(graph.edges)
     .start();
 
-  const edges = svg.selectAll('line')
-    .data(dataset.edges)
+  const link = svg
+    .selectAll('.link')
+    .data(graph.edges)
     .enter()
     .append('line')
-    .attr('id', (d, i) => 'edge' + i)
-    .attr('marker-end','url(#arrowhead)')
-    .style('stroke','#ccc')
-    .style('pointer-events', 'none');
+    .attr('class', 'link')
+    .style('marker-end', 'url(#suit)');
 
-  const nodes = svg.selectAll('circle')
-    .data(dataset.nodes)
+  const node = svg
+    .selectAll('.node')
+    .data(graph.nodes)
     .enter()
     .append('circle')
-    .attr({ 'r': 15 })
-    .style('fill', (d, i) => colors(i))
-    .call(force.drag)
+    .attr('class', 'node')
+    .attr('r', 10)
+    .style('fill', (d, i) => color(i))
+    .call(force.drag);
 
-  const nodelabels = svg.selectAll('.nodelabel')
-    .data(dataset.nodes)
+  const nodelabels = svg
+    .selectAll('.nodelabel')
+    .data(graph.nodes)
     .enter()
     .append('text')
     .attr({
@@ -56,56 +75,39 @@ const draw = dataset => {
     })
     .text((d) => d.name);
 
-  const edgepaths = svg.selectAll('.edgepath')
-    .data(dataset.edges)
+
+  svg
+    .append('defs')
+    .selectAll('marker')
+    .data(['suit', 'licensing', 'resolved'])
     .enter()
+    .append('marker')
+    .attr('id', d => d)
+    .attr('viewBox', '0 -5 10 10')
+    .attr('refX', 25)
+    .attr('refY', 0)
+    .attr('markerWidth', 6)
+    .attr('markerHeight', 6)
+    .attr('orient', 'auto')
     .append('path')
-    .attr({
-      'd': function(d) { return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y },
-      'class': 'edgepath',
-      'fill-opacity': 0,
-      'stroke-opacity': 0,
-      'fill': 'blue',
-      'stroke': 'red',
-      'id': function(d,i) { return 'edgepath'+i }
-    })
-    .style('pointer-events', 'none');
-
-  svg.append('defs').append('marker')
-    .attr({
-      'id': 'arrowhead',
-      'viewBox': '-0 -5 10 10',
-      'refX': 25,
-      'refY': 0,
-      'orient': 'auto',
-      'markerWidth': 10,
-      'markerHeight': 10,
-      'xoverflow': 'visible'
-    })
-    .append('svg:path')
-    .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-    .attr('fill', '#ccc')
-    .attr('stroke','#ccc');
-
+    .attr('d', 'M0,-5L10,0L0,5 L10,0 L0, -5')
+    .style('stroke', '#4679BD')
+    .style('opacity', '0.6');
 
   force.on('tick', () => {
-
-    edges.attr({
-      'x1': function(d) { return d.source.x; },
-      'y1': function(d) { return d.source.y; },
-      'x2': function(d) { return d.target.x; },
-      'y2': function(d) { return d.target.y; }
-    });
-
-    nodes.attr({
-      'cx': function(d) { return d.x; },
-      'cy': function(d) { return d.y; }
-    });
-
-    nodelabels.attr('x', function(d) { return d.x; })
+    nodelabels
+      .attr('x', function(d) { return d.x; })
       .attr('y', function(d) { return d.y; });
 
-    edgepaths.attr('d', function(d) { return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y; });
+    link
+      .attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+    node
+      .attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; });
   });
 };
 
@@ -136,7 +138,19 @@ function onClick() {
   input.value = '';
 }
 
+function onEnter(e) {
+  if (e.keyCode === 13) {
+    document.querySelector('.loading').style.display = 'block';
+    createNetwork(e.target.value)
+      .then(_onSuccess)
+      .catch(_onFail);
+    e.target.value = '';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const button = document.querySelector('button');
+  const input = document.querySelector('input');
   button.addEventListener('click', onClick);
+  input.addEventListener('keypress', onEnter);
 });
