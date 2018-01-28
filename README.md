@@ -13,9 +13,6 @@ Visualize the structure of your GitHub network (follower and following).
 ### How does it work?
 
 ### Next Steps
-* Make a beautiful UI
-* Visualize node profile
-* Add loading
 * Visualize node profile
 * Donwload graph
 
