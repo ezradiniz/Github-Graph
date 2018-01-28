@@ -162,3 +162,17 @@ h1 {
     transform: rotate(360deg);
   }
 }
+
+/*
+ * D3.js
+ * 
+ * */
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
