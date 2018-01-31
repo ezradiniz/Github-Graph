@@ -6,7 +6,7 @@ html, body {
 
 .grid-container {
   display: grid;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto auto auto 1fr;
 }
 
 .header {
@@ -17,6 +17,8 @@ html, body {
 .logo-icon {
   vertical-align: text-bottom;
   margin-right: 12px;
+  width: 50px;
+  height: 50px;
 }
 
 h1 {
@@ -24,6 +26,11 @@ h1 {
   font-size: 22px;
   font-weight: 400;
   text-align: center;
+}
+
+.version {
+  font-size: 12px;
+  color: #24292e;
 }
 
 .content {
@@ -46,13 +53,56 @@ h1 {
   border-radius: 10px;
   border-bottom: 3px solid #444;
   color: #FFF;
-  font-size: 20px;
+  font-size: 15px;
   text-shadow: 0px -2px #444;
   cursor: pointer;
 }
 
 .button:hover {
   opacity: 0.8;
+}
+
+.profile {
+  display: grid;
+  justify-self: center;
+  justify-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 5px;
+  border: 1px solid #666;
+  width: 200px;
+  max-width: 200px;
+  visibility: hidden;
+  display: none;
+}
+
+.profile-photo__img {
+  width: 100px;
+  height: 100px;
+}
+
+.profile-photo__img:hover {
+  opacity: 0.8;
+}
+
+.profile-name {
+  font-weight: bold;
+  font-style: normal;
+  color: #24292e;
+  word-break: keep-all;
+  font-size: 22px;
+}
+.profile-nickname {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 24px;
+  color: #666;
+  display: block;
+  text-decoration: none;
+}
+
+.profile-nickname:hover {
+  text-decoration: underline;
 }
 
 /*
@@ -161,6 +211,26 @@ h1 {
     -o-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+/*
+ * svg
+ * */
+
+.svg-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  vertical-align: top;
+  overflow: hidden;
+}
+        
+.svg-content-responvie {
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+  left: 0;
 }
 
 /*
