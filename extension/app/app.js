@@ -2,6 +2,18 @@
 
 const draw = graph => {
 
+  const viewProfile = user => {
+    const url = `https://github.com/${user.nickname}`;
+    document.querySelector('.profile-photo').href = url;
+    document.querySelector('.profile-photo__img').src = user.image;
+    document.querySelector('.profile-name').innerHTML = user.name;
+    document.querySelector('.profile').style.visibility = 'visible';
+    document.querySelector('.profile').style.display = 'grid';
+    const nickname = document.querySelector('.profile-nickname');
+    nickname.innerHTML = user.nickname;
+    nickname.href = url;
+  };
+
   const diff = document.querySelector('svg').getBoundingClientRect();
   const width = window.innerWidth;
   const height = window.innerHeight - diff.top;
@@ -30,8 +42,8 @@ const draw = graph => {
 
   const svg = d3
     .select('svg')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('preserveAspectRatio', 'xMinYMin meet')
+    .attr('viewBox', `0 0 ${width} ${height}`)
     .call(zoom)
     .append('svg:g');
 
@@ -58,9 +70,24 @@ const draw = graph => {
     .enter()
     .append('circle')
     .attr('class', 'node')
-    .attr('r', 10)
+    .attr('r', 8)
     .style('fill', (d, i) => color(i))
-    .call(force.drag);
+    .call(force.drag)
+    .on('click', function (d) {
+      GH
+        .fetchProfile(d.name)
+        .then(res => viewProfile(res));
+    })
+    .on('mouseover', function (d) {
+      d3
+        .select(this)
+        .attr('r', 12);
+    })
+    .on('mouseout', function (d) {
+      d3
+        .select(this)
+        .attr('r', 8);
+    })
 
   const nodelabels = svg
     .selectAll('.nodelabel')
@@ -119,6 +146,8 @@ function _onSuccess(data) {
     return { name: key };
   });
   document.querySelector('.loading').style.display = 'none';
+  document.querySelector('.content').style.visibility = 'hidden';
+  document.querySelector('.content').style.display = 'none';
   draw(graph);
 }
 
@@ -132,7 +161,7 @@ function _onFail(err) {
 function onClick() {
   const input = document.querySelector('input');
   document.querySelector('.loading').style.display = 'block';
-  createNetwork(input.value)
+  GH.fetchNetwork(input.value)
     .then(_onSuccess)
     .catch(_onFail);
   input.value = '';
@@ -141,7 +170,7 @@ function onClick() {
 function onEnter(e) {
   if (e.keyCode === 13) {
     document.querySelector('.loading').style.display = 'block';
-    createNetwork(e.target.value)
+    GH.fetchNetwork(e.target.value)
       .then(_onSuccess)
       .catch(_onFail);
     e.target.value = '';
@@ -151,6 +180,7 @@ function onEnter(e) {
 document.addEventListener('DOMContentLoaded', () => {
   const button = document.querySelector('button');
   const input = document.querySelector('input');
+
   button.addEventListener('click', onClick);
   input.addEventListener('keypress', onEnter);
 });

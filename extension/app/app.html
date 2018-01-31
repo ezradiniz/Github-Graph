@@ -4,24 +4,36 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <link href="app.css" type="text/css" rel="stylesheet">
-    <script src="/fetch/github.js" charset="utf-8"></script>
+    <script src="/api/github.js" charset="utf-8"></script>
     <script src="/d3/d3.min.js" charset="utf-8"></script>
     <script src="app.js" charset="utf-8"></script>
   </head>
   <body>
+    <div class="loading"></div>
     <div class="grid-container">
       <div class="header">
         <h1>
           <img class="logo-icon" src="../icon.png"/>
           GitHub Graph
+          <span class="version">(1.0.0)</span>
         </h1>
       </div>
       <div class="content">
-        <input class="search" type="search" placeholder="Name..." />
+        <input class="search" type="search" placeholder="Nickname..." />
         <button class="button" type="submit">Start</button>
       </div>
-      <svg></svg>
+      <div class="profile">
+        <a href="#" class="profile-photo">
+          <img class="profile-photo__img" src=""/>
+        </a>
+        <h1 class="profile-names">
+          <span class="profile-name"></span>
+          <a href="#" class="profile-nickname"></a>
+        </h1>
+      </div>
+      <div class="svg-container">
+        <svg class="svg-content-responsive"></svg>
+      </div>
     </div>
-    <div class="loading"></div>
   </body>
 </html>

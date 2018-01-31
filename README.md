@@ -13,8 +13,8 @@ Visualize the structure of your GitHub network (follower and following).
 ### How does it work?
 
 ### Next Steps
-* Visualize node profile
-* Donwload graph
+* Import and export (gdf, csv formats)
+* Search node by name
 
 ### Authors
 * **Mateus Esdras** - *Initial work* - [ezradiniz](https://github.com/ezradiniz)
