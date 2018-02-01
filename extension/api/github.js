@@ -56,7 +56,7 @@
                 } else {
                   count++;
                   console.log(`Retry - ${count}`);
-                  doWork(time * 2);
+                  doWork(time * 7.5);
                 }
               } else {
                 reject(res);
