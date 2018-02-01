@@ -3,6 +3,7 @@
   "use strict";
 
   const TIME = 1000;
+  const MAX_RETRY = 10;
   const GITHUB = 'https://github.com';
 
   const cache = {};
@@ -22,8 +23,6 @@
   const _createURL = (from, type) =>
     (from.match(GITHUB)) ? from : `${GITHUB}/${from}/${type}`;
 
-  const _handleResponse = (res, resolve, reject) => (res.status === 200) ? resolve(res) : reject(res);
-
   const queryNodes = doc => {
     const response = {};
     const followersList = [ ...doc.querySelectorAll(".follow-list-item") ];
@@ -42,14 +41,31 @@
       image: doc.querySelector('.avatar').src
     });
 
-  const fetchWrapper = (time, promise, ...params) =>
+  const fetchWrapper = (time, promise, params, count = 0) =>
     new Promise((resolve, reject) => {
       console.log("Fetched", params);
-      setTimeout(() => {
-        promise(params)
-          .then(res => _handleResponse(res, resolve, reject))
-          .catch(err => reject(err));
-      }, time);
+      const doWork = (t) => {
+        setTimeout(() => {
+          promise(params)
+            .then(res => {
+              if (res.status === 200) {
+                resolve(res);
+              } else if (res.status === 429) {
+                if (count === MAX_RETRY) {
+                  reject(res);
+                } else {
+                  count++;
+                  console.log(`Retry - ${count}`);
+                  doWork(time * 7.5);
+                }
+              } else {
+                reject(res);
+              }
+            })
+            .catch(err => reject(err));
+        }, t);
+      };
+      doWork(time);
     });
 
   const fetchNodes = (from, type) =>
@@ -77,12 +93,7 @@
 
   const fetchNetwork = user =>
     new Promise((resolve, reject) => {
-      fetchAllNodesFrom(user, 'followers')
-        .then(followers =>
-          fetchAllNodesFrom(user, 'following')
-          .then(following => new Set([ ...followers ].concat([ ...following ])))
-          .catch(err => reject(err))
-        )
+      fetchAllNodesFrom(user, 'following')
         .then(nodes => {
           const graph = _initGraph(nodes);
           const iter = _makeIterator(nodes);
@@ -114,4 +125,4 @@
 
   global.GH = { fetchNetwork, fetchProfile };
 
-})(this.window);
+})(window);
