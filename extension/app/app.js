@@ -12,6 +12,7 @@ const draw = graph => {
     const nickname = document.querySelector('.profile-nickname');
     nickname.innerHTML = user.nickname;
     nickname.href = url;
+    document.querySelector('.profile-loading').style.display = 'none';
   };
 
   const diff = document.querySelector('svg').getBoundingClientRect();
@@ -74,6 +75,9 @@ const draw = graph => {
     .style('fill', (d, i) => color(i))
     .call(force.drag)
     .on('click', function (d) {
+      document.querySelector('.profile').style.visibility = 'hidden';
+      document.querySelector('.profile').style.display = 'none';
+      document.querySelector('.profile-loading').style.display = 'block';
       GH
         .fetchProfile(d.name)
         .then(res => viewProfile(res));
