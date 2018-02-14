@@ -8,12 +8,6 @@
 
   const cache = {};
 
-  function* _makeIterator(nodes) {
-    for (let node of nodes) {
-      yield node;
-    }
-  }
-
   const _initGraph = nodes =>
     [ ...nodes ].reduce((g, k) => {
       g[k] = [];
@@ -23,7 +17,7 @@
   const _createURL = (from, type) =>
     (from.match(GITHUB)) ? from : `${GITHUB}/${from}/${type}`;
 
-  const queryNodes = doc => {
+  const _queryNodes = doc => {
     const response = {};
     const followersList = [ ...doc.querySelectorAll(".follow-list-item") ];
     response.nodes = followersList.map(entry => entry.querySelector("a > img").alt.replace("@", ""));
@@ -34,19 +28,19 @@
     return response;
   };
 
-  const queryProfile = doc =>
+  const _queryProfile = doc =>
     Object.assign({}, {
       name: doc.querySelector('.p-name').innerHTML,
       nickname: doc.querySelector('.p-nickname').innerHTML,
       image: doc.querySelector('.avatar').src
     });
 
-  const fetchWrapper = (time, promise, params, count = 0) =>
+  const _fetchWrapper = (time, fn, params, count = 0) =>
     new Promise((resolve, reject) => {
       console.log("Fetched", params);
       const doWork = (t) => {
         setTimeout(() => {
-          promise(params)
+          fn(params)
             .then(res => {
               if (res.status === 200) {
                 resolve(res);
@@ -68,61 +62,41 @@
       doWork(time);
     });
 
-  const fetchNodes = (from, type) =>
-    fetchWrapper(TIME, fetch, _createURL(from, type))
+  const _fetchNodes = (from, type) =>
+    _fetchWrapper(TIME, fetch, _createURL(from, type))
       .then(response => response.text())
-      .then(body => queryNodes(new DOMParser().parseFromString(body, 'text/html')));
+      .then(body => _queryNodes(new DOMParser().parseFromString(body, 'text/html')));
 
-  const fetchAllNodesFrom = (from, type) =>
-    new Promise((resolve, reject) => {
-      const nodes = new Set();
-      const doWork = (nextPage) => {
-        fetchNodes(nextPage, type)
-          .then(response => {
-            response.nodes.map(node => nodes.add(node));
-            if (response.next) {
-              doWork(response.next);
-            } else {
-              resolve(nodes)
-            }
-          })
-          .catch(err => reject(err));
-      };
-      doWork(from);
-    });
+  async function fetchAllNodesFrom(from, type) {
+    let nodes = [];
+    let next = from;
+    while (next) {
+      const response = await _fetchNodes(next, type);
+      nodes = [ ...nodes, ...response.nodes ];
+      next = response.next;
+    }
+    return nodes;
+  }
 
-  const fetchNetwork = user =>
-    new Promise((resolve, reject) => {
-      fetchAllNodesFrom(user, 'following')
-        .then(nodes => {
-          const graph = _initGraph(nodes);
-          const iter = _makeIterator(nodes);
-          const doWork = ({ value, done }) => {
-            if (done) {
-              resolve(graph);
-            } else {
-              fetchAllNodesFrom(value, 'following')
-                .then(edges => {
-                  graph[value] = [ ...edges ].filter(e => nodes.has(e));
-                  doWork(iter.next());
-                })
-                .catch(err => reject(err));
-            }
-          };
-          doWork(iter.next());
-        })
-        .catch(err => reject(err));
-    });
+  async function fetchNetwork(user) {
+    const nodes = new Set(await fetchAllNodesFrom(user, 'following'));
+    const graph = _initGraph(nodes);
+    for (const from of nodes) {
+      const to = await fetchAllNodesFrom(from, 'following');
+      graph[from] = to.filter(e => nodes.has(e));
+    }
+    return graph;
+  }
 
   const fetchProfile = user =>
     (cache.hasOwnProperty(user))
-      ?  new Promise((resolve) => resolve(cache[user]))
+      ?  Promise.resolve(cache[user])
       :
         fetch(`${GITHUB}/${user}`)
           .then(response => response.text())
-          .then(body => queryProfile(new DOMParser().parseFromString(body, 'text/html')))
+          .then(body => _queryProfile(new DOMParser().parseFromString(body, 'text/html')))
           .then(res => cache[user] = res);
 
-  global.GH = { fetchNetwork, fetchProfile };
+  global.GH = { fetchNetwork, fetchProfile, fetchAllNodesFrom };
 
 })(window);
