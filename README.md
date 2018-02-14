@@ -1,7 +1,8 @@
 # GitHub Graph Extension - (Beta)
 ![Graph](assets/graph.png "Graph Example")
 
-Visualize the structure of your GitHub network (limited a 5k `following` per user).
+Visualize the structure of your GitHub network (limited a 5k `following` per user, if your network is
+large, it can take a long time).
 
 ### How to use it?
 * Install the [Chrome Browser](https://www.google.com/chrome/)
