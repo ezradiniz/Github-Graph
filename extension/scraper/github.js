@@ -8,12 +8,6 @@
 
   const cache = {};
 
-  const _initGraph = nodes =>
-    [ ...nodes ].reduce((g, k) => {
-      g[k] = [];
-      return g;
-    }, {});
-
   const _createURL = (from, type) =>
     (from.match(GITHUB)) ? from : `${GITHUB}/${from}/${type}`;
 
@@ -50,7 +44,7 @@
                 } else {
                   count++;
                   console.log(`Retry - ${count}`);
-                  doWork(time * 7.5);
+                  doWork(time * 10);
                 }
               } else {
                 reject(res);
@@ -67,25 +61,23 @@
       .then(response => response.text())
       .then(body => _queryNodes(new DOMParser().parseFromString(body, 'text/html')));
 
-  async function fetchAllNodesFrom(from, type) {
-    let nodes = [];
-    let next = from;
-    while (next) {
-      const response = await _fetchNodes(next, type);
-      nodes = [ ...nodes, ...response.nodes ];
-      next = response.next;
+  async function fetchAllNodesFrom(from, type, nodes = []) {
+    if (from) {
+      const response = await _fetchNodes(from, type);
+      return await fetchAllNodesFrom(response.next, type, [ ...nodes, ...response.nodes ]);
+    } else {
+      return nodes;
     }
-    return nodes;
   }
 
   async function fetchNetwork(user) {
     const nodes = new Set(await fetchAllNodesFrom(user, 'following'));
-    const graph = _initGraph(nodes);
-    for (const from of nodes) {
-      const to = await fetchAllNodesFrom(from, 'following');
-      graph[from] = to.filter(e => nodes.has(e));
-    }
-    return graph;
+    return [ ...nodes ].reduce(async (collection, key) => {
+      const graph = await collection;
+      const to = await fetchAllNodesFrom(key, 'following');
+      graph[key] = to.filter(e => nodes.has(e));
+      return graph;
+    }, Promise.resolve({}));
   }
 
   const fetchProfile = user =>
