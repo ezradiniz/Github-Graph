@@ -142,6 +142,18 @@ const draw = graph => {
   });
 };
 
+const parseGDF = data => {
+  const headerNodes = 'nodedef> name VARCHAR\n';
+  const nodes = data.nodes.map(node => {
+    return `${node.name}\n`;
+  }).join('');
+  const headerEdges = 'edgedef> node1, node2, directed BOOLEAN\n';
+  const edges = data.edges.map(edge => {
+    return `${edge.source.name},${edge.target.name},true\n`;
+  }).join('');
+  return headerNodes + nodes + headerEdges + edges;
+};
+
 function _onSuccess(data) {
   const graph = { nodes: [], edges: [] };
   const nodesIndex = Object.keys(data).reduce((g, k, index) => { g[k] = index; return g; }, {});
@@ -152,6 +164,8 @@ function _onSuccess(data) {
   document.querySelector('.loading').style.display = 'none';
   document.querySelector('.content').style.visibility = 'hidden';
   document.querySelector('.content').style.display = 'none';
+  document.querySelector('.download').style.display = 'block';
+  document.querySelector('.download').addEventListener('click', () => download(graph));
   draw(graph);
 }
 
@@ -160,6 +174,17 @@ function _onFail(err) {
   document.querySelector('.loading').style.display = 'none';
   alert('Sorry, an error occurred while processing your request');
   console.error(err);
+}
+
+function download(graph) {
+  const blob = new Blob([parseGDF(graph)], { type: 'application/json' });
+  const filename = 'graph.gdf';
+  const a = document.createElement('a');
+  a.href = window.URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function onClick() {

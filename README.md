@@ -14,7 +14,6 @@ large, it can take a long time).
 ### How does it work?
 
 ### Next Steps
-* Import and export (gdf, csv formats)
 * Search node by name
 
 ### Authors

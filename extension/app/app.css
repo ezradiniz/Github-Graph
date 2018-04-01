@@ -12,6 +12,11 @@ html, body {
 .header {
   background-color: #e1e4e8;
   padding: 10px;
+  text-align: center;
+}
+
+.download {
+  display: none;
 }
 
 .logo-icon {
