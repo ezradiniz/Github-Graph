@@ -72,7 +72,7 @@
 
   async function fetchNetwork(user) {
     const nodes = new Set(await fetchAllNodesFrom(user, 'following'));
-    return [ ...nodes ].reduce(async (collection, key) => {
+    return Object.keys(nodes).reduce(async (collection, key) => {
       const graph = await collection;
       const to = await fetchAllNodesFrom(key, 'following');
       graph[key] = to.filter(e => nodes.has(e));
